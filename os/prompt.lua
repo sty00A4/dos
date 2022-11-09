@@ -107,25 +107,27 @@ return setmetatable({
         term.setCursorPos(CX, CY)
         return res
     end,
-    input = function(text, default, w, h, fg, bg, bracketColor)
+    input = function(text, default, hideChar, w, h, fg, bg, bracketColor)
         local W, H = term.getSize()
         local CX, CY = term.getCursorPos()
         expect("argument #1", text, "string")
+        expect("argument #2", default, "string", "nil")
+        expect("argument #3", hideChar, "string", "nil")
         if w then
-            expect("argument #2", w, "number") expect_min("argument #2", w, 12)
+            expect("argument #4", w, "number") expect_min("argument #4", w, 12)
             w = w + 2
         end
         w = w or math.min(#text + 2, W)
-        expect("argument #2", w, "number") expect_min("argument #2", w, 12)
+        expect("argument #4", w, "number") expect_min("argument #4", w, 12)
         if h then
-            expect("argument #3", h, "number") expect_min("argument #3", h, 1)
+            expect("argument #5", h, "number") expect_min("argument #5", h, 1)
             h = h + 4
         end
         h = h or math.min(#text:linesFromWidth(w) + 4, H)
-        expect("argument #3", h, "number") expect_min("argument #3", h, 1)
-        fg = fg or colors.white expect("argument #4", fg, "number")
-        bg = bg or colors.black expect("argument #5", bg, "number")
-        bracketColor = bracketColor or colors.gray expect("argument #6", bracketColor, "number")
+        expect("argument #5", h, "number") expect_min("argument #5", h, 1)
+        fg = fg or colors.white expect("argument #6", fg, "number")
+        bg = bg or colors.black expect("argument #7", bg, "number")
+        bracketColor = bracketColor or colors.gray expect("argument #7", bracketColor, "number")
         local TERM = term.current()
         local win = window.create(TERM, math.floor(W/2 - w/2), math.floor(H/2 - h/2), w, h)
         term.redirect(win)
