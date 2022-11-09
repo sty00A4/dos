@@ -54,10 +54,10 @@ end
 ---@param t table
 ---@param sep string
 ---@return string
-table.join = function(t, sep)
+table.join = function(t, sep, key)
     local str = ""
-    for _, v in pairs(t) do
-        str = str .. tostring(v) .. sep
+    for k, v in pairs(t) do
+        str = str .. (key and k.." = " or "") .. tostring(v) .. sep
     end
     if #str > 0 then str = str:sub(1,#str-#sep) end
     return str
@@ -72,6 +72,8 @@ table.containsKey = function(t, key)
     end
     return false
 end
+---@param t table
+table.tostring = function(t) return "{ "..table.join(t, ", ", true).." }" end
 ---returns a table containing the parts of the string `s` split by the seperator `sep`
 ---@param s string
 ---@param sep string

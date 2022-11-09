@@ -55,6 +55,8 @@ lib.checkPermission = function(path, f)
     end
 end
 lib.checkUserPermission = function(name, f)
+    if name == nil then return end
+    expect("name", name, "string")
     expect("f", f, "string")
     if not lib.hasUserPermisstion(name, f) then
         local password

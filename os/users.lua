@@ -4,7 +4,7 @@ if not fs.exists(".data/users.txt") then
     local FILE = fs.open(".data/users.txt", "w") FILE.write("{}") FILE.close()
 end
 local FUSERS = fs.open(".data/users.txt", "r")
-lib.users = textutils.unserialize(FUSERS.readAll())
+lib.users = textutils.unserialise(FUSERS.readAll())
 FUSERS.close()
 
 lib.startUser = function(name)
@@ -24,8 +24,8 @@ lib.new = function(name, password)
     }
 end
 lib.getUser = function(name)
-    expect("name", name, "string")
-    return lib.users[name]
+    expect("name", name, "string", "nil")
+    return lib.users[name or 0]
 end
 lib.getCurrentUser = function()
     return lib.users[lib.current or 0]
