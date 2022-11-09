@@ -11,6 +11,7 @@ return setmetatable({
     ---@return boolean
     confirm = function(text, w, h, fg, bg, bracketColor)
         local W, H = term.getSize()
+        local CX, CY = term.getCursorPos()
         expect("argument #1", text, "string")
         if w then
             expect("argument #2", w, "number") expect_min("argument #2", w, 12)
@@ -57,10 +58,12 @@ return setmetatable({
             local cancelRes = cancelButton:event(e, win) if cancelRes then break end
         end
         win.setVisible(false)
+        term.setCursorPos(CX, CY)
         return res
     end,
     info = function(text, w, h, fg, bg, bracketColor)
         local W, H = term.getSize()
+        local CX, CY = term.getCursorPos()
         expect("argument #1", text, "string")
         if w then
             expect("argument #2", w, "number") expect_min("argument #2", w, 12)
@@ -101,10 +104,12 @@ return setmetatable({
             local okRes = okButton:event(e, win) if okRes then res = true break end
         end
         win.setVisible(false)
+        term.setCursorPos(CX, CY)
         return res
     end,
     input = function(text, default, w, h, fg, bg, bracketColor)
         local W, H = term.getSize()
+        local CX, CY = term.getCursorPos()
         expect("argument #1", text, "string")
         if w then
             expect("argument #2", w, "number") expect_min("argument #2", w, 12)
@@ -148,10 +153,12 @@ return setmetatable({
             local okRes = okButton:event(e, win) if okRes then break end
         end
         win.setVisible(false)
+        term.setCursorPos(CX, CY)
         return inputText.content
     end,
     permit = function(text, w, h, fg, bg, bracketColor)
         local W, H = term.getSize()
+        local CX, CY = term.getCursorPos()
         expect("argument #1", text, "string")
         if w then
             expect("argument #2", w, "number") expect_min("argument #2", w, 23)
@@ -177,18 +184,18 @@ return setmetatable({
             fg=colors.red, bg=bg, bracketColor=bracketColor,
             onClick = function() return true end
         }
-        local alwaysButton = gui.button {
-            text="ALWAYS", x=w-#"ALWAYS][CANCEL]", y=h,
+        local onceButton = gui.button {
+            text="ONCE", x=w-#"ONCE][CANCEL]", y=h,
             fg=colors.blue, bg=bg, bracketColor=bracketColor,
             onClick = function() return true end
         }
         local allowButton = gui.button {
-            text="ALLOW", x=w-#"ALLOW][ALWAYS][CANCEL]", y=h,
+            text="ALLOW", x=w-#"ALLOW][ONCE][CANCEL]", y=h,
             fg=colors.green, bg=bg, bracketColor=bracketColor,
             onClick = function() return true end
         }
         term.redirect(TERM)
-        local res, always = false, false
+        local res, once = false, false
         while true do
             win.setTextColor(fg)
             win.setBackgroundColor(bg)
@@ -197,16 +204,17 @@ return setmetatable({
             gui.drawBox(win)
             gText:draw(win)
             cancelButton:draw(win)
-            alwaysButton:draw(win)
+            onceButton:draw(win)
             allowButton:draw(win)
             local e = event.new(os.pullEvents({ "mouse_click", "key" }))
             if e.type == "key" then if e.key == keys.enter then break end end
             local cancelRes = cancelButton:event(e, win) if cancelRes then break end
-            local alwaysRes = alwaysButton:event(e, win) if alwaysRes then res, always = true, true break end
+            local onceRes = onceButton:event(e, win) if onceRes then res, once = true, true break end
             local allowRes = allowButton:event(e, win) if allowRes then res = true break end
         end
         win.setVisible(false)
-        return res, always
+        term.setCursorPos(CX, CY)
+        return res, once
     end,
 }, {
     __name = "prompt", __newindex = function (self, k, v)
