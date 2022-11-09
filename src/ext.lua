@@ -38,6 +38,18 @@ table.contains = function(t, e)
     end
     return false
 end
+---returns `true` if the start of string `e` was found in the table `t`
+---@param t table
+---@param e string
+---@return boolean
+table.containsStart = function(t, e)
+    for _, v in pairs(t) do
+        if type(v) == "string" then
+            if v == e:sub(1, #v) then return true end
+        end
+    end
+    return false
+end
 ---joins table's contents to a string seperated by `sep`
 ---@param t table
 ---@param sep string
