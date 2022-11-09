@@ -1,6 +1,6 @@
-require("deepslate.src.ext")
-local gui = require("deepslate.src.gui")
-local event = require("deepslate.src.event")
+require("dos.src.ext")
+local gui = require("dos.src.gui")
+local event = require("dos.src.event")
 return setmetatable({
     ---a confirm prompt
     ---@param text string

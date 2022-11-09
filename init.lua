@@ -1,9 +1,9 @@
-require("deepslate.src.ext")
+require("dos.src.ext")
 local lib = {}
-lib.gui = require("deepslate.src.gui")
-lib.event = require("deepslate.src.event")
-lib.prompt = require("deepslate.src.prompt")
-lib.permit = require("deepslate.src.permit")
+lib.gui = require("dos.src.gui")
+lib.event = require("dos.src.event")
+lib.prompt = require("dos.os.prompt")
+lib.permit = require("dos.os.permit")
 
 local SHELL_RUN = shell.run
 local SHELL_EXECUTE = shell.execute
@@ -98,8 +98,8 @@ settings.load = function(sPath)
 end
 
 return setmetatable(lib, {
-    __name = "deepslate", __newindex = function(self, k, v)
-        local immutable = { "gui", "event", "prompt" }
+    __name = "dos", __newindex = function(self, k, v)
+        local immutable = { "gui", "event", "prompt", "permit" }
         if table.contains(immutable, k) then immutableError(k, 2) end
         rawset(self, k, v)
     end,

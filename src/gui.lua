@@ -1,4 +1,4 @@
-require("deepslate.src.ext")
+require("dos.src.ext")
 return setmetatable({
     ---@param win table
     drawBox = function(win, color)

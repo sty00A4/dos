@@ -1,5 +1,5 @@
 local lib = {}
-lib.prompt = require("deepslate.src.prompt")
+lib.prompt = require("dos.os.prompt")
 if not fs.exists(".data") then fs.makeDir(".data") end
 if not fs.exists(".data/permits.txt") then
     local FILE = fs.open(".data/permits.txt", "w") FILE.write("{}") FILE.close()
