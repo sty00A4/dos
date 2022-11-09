@@ -1,2 +1,2 @@
-# deepslate
+# Deepslate
 A computercraft module

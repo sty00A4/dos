@@ -1,8 +1,8 @@
-require("deepslate.ext")
+require("deepslate.src.ext")
 local lib = {}
-lib.gui = require("deepslate.gui")
-lib.event = require("deepslate.event")
-lib.prompt = require("deepslate.prompt")
+lib.gui = require("deepslate.src.gui")
+lib.event = require("deepslate.src.event")
+lib.prompt = require("deepslate.src.prompt")
 return setmetatable(lib, {
     __name = "deepslate", __newindex = function(self, k, v)
         local immutable = { "gui", "event", "prompt" }
