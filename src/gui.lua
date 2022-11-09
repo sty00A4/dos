@@ -1,5 +1,22 @@
 require("deepslate.src.ext")
 return setmetatable({
+    ---@param win table
+    drawBox = function(win, color)
+        expect("win", win, "table")
+        color = color or colors.gray expect("color", color, "number")
+        local fg = win.getTextColor()
+        local W, H = win.getSize()
+        win.setCursorPos(1, 1)
+        win.setTextColor(color)
+        win.write(" ") win.write(("-"):rep(W-2)) win.write(" ")
+        for y = 2, H-1 do
+            win.setCursorPos(1, y)
+            win.write("|") win.write((" "):rep(W-2)) win.write("|")
+        end
+        win.setCursorPos(1, H)
+        win.write(" ") win.write(("-"):rep(W-2)) win.write(" ")
+        win.setTextColor(fg)
+    end,
     ---@param opts table
     ---@return gui.button
     button = function(opts)

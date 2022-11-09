@@ -11,6 +11,23 @@ if not term.isColor() then
     colors.magenta = colors.white
     colors.orange = colors.lightGray
 end
+---returns a copy of `t`
+---@param t table
+---@return table
+table.copy = function(t)
+    if type(t) == "table" then
+        local _t = {}
+        for k, v in pairs(t) do _t.k = table.copy(v) end
+        local meta = getmetatable(t)
+        if meta then
+            local _meta = {}
+            for k, v in pairs(meta) do _meta.k = table.copy(v) end
+            return setmetatable(_t, _meta)
+        end
+        return _t
+    end
+    return t
+end
 ---returns `true` if object `e` was found in the table `t`
 ---@param t table
 ---@param e any
