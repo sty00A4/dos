@@ -1,6 +1,9 @@
 local lib = {}
 lib.prompt = require("deepslate.src.prompt")
 if not fs.exists(".data") then fs.makeDir(".data") end
+if not fs.exists(".data/permits.txt") then
+    local FILE = fs.open(".data/permits.txt", "w") FILE.write("{}") FILE.close()
+end
 local FPERMIT = fs.open(".data/permits.txt", "r")
 lib.permits = textutils.unserialize(FPERMIT.readAll())
 FPERMIT.close()
@@ -24,7 +27,7 @@ end
 lib.hasPermisstion = function(path, f)
     expect("path", path, "string")
     expect("f", f, "string")
-    if path:sub(1, #"rom") then return true end
+    if path:sub(1, #"rom") == "rom" then return true end
     if lib.permits[path] then
         if type(lib.permits[path]) == "boolean" then return true end
         if table.contains(lib.permits[path], f) then
