@@ -108,6 +108,8 @@ settings.load = function(sPath)
 end
 
 lib.boot = function()
+    -- todo login interface
+    lib.users.startUser("root")
     shell.run("hello")
 end
 

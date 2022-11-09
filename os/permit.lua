@@ -35,7 +35,7 @@ lib.hasPermisstion = function(path, f)
     end
     return false
 end
-lib.hasUserPermisstion = function(name, f)
+lib.hasUserPermission = function(name, f)
     expect("name", name, "string")
     expect("f", f, "string")
     return table.containsStart(lib.users.getUser(name).permits, f)
@@ -47,7 +47,7 @@ lib.checkPermission = function(path, f)
     if not lib.hasPermisstion(path, f) then
         local allow, once = lib.prompt.permit(path.." wants permission to: "..f, 30)
         if not allow then
-            error("no permission for "..f, 2)
+            error("no permission for "..f, 3)
             if settings.get("permit.exit", true) then os.exit() end
         end
         if not once then lib.grandPermisstion(path, f) end
@@ -58,14 +58,14 @@ lib.checkUserPermission = function(name, f)
     if name == nil then return end
     expect("name", name, "string")
     expect("f", f, "string")
-    if not lib.hasUserPermisstion(name, f) then
+    if not lib.hasUserPermission(name, f) then
         local password
         repeat
             password = lib.prompt.input("root password", "", "*")
             if #password == 0 then break end
         until password == lib.users.root.password
         if password ~= lib.users.root.password then
-            error("no permission for "..f, 2)
+            error("no permission for "..f, 3)
         end
         term.clear()
     end

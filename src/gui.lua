@@ -89,6 +89,7 @@ return setmetatable({
         opts.x = default(opts.x, 1) expect("x", opts.x, "number")
         opts.y = default(opts.y, 1) expect("y", opts.y, "number")
         opts.default = default(opts.default, "") expect("default", opts.default, "string")
+        expect("hideChar", opts.hideChar, "string", "nil")
         opts.content = default(opts.content, opts.default) expect("content", opts.content, "string")
         opts.selected = default(opts.selected, false) expect("selected", opts.selected, "boolean")
         opts.w = default(opts.w, 12) expect("w", opts.w, "number")
@@ -102,7 +103,11 @@ return setmetatable({
             win.setCursorPos(self.x, self.y)
             win.write((" "):rep(self.w))
             win.setCursorPos(self.x, self.y)
-            win.write(self.content:sub(#self.content - math.min(#self.content - 1, self.w - 2), #self.content))
+            if self.hideChar then
+                win.write(self.hideChar:rep(#self.content:sub(#self.content - math.min(#self.content - 1, self.w - 2), #self.content)))
+            else
+                win.write(self.content:sub(#self.content - math.min(#self.content - 1, self.w - 2), #self.content))
+            end
             win.setCursorBlink(self.selected)
             win.setBackgroundColor(bg) win.setTextColor(fg)
         end) expect("draw", opts.draw, "function")
