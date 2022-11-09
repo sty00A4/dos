@@ -11,15 +11,14 @@ return setmetatable({
         opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
         opts.brackets = default(opts.brackets, "[]") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
         opts.draw = default(opts.draw, function(self, win)
-            local x, y = term.getCursorPos()
+            local x, y = win.getCursorPos()
             local fg, bg = win.getTextColor(), win.getBackgroundColor()
             win.setCursorPos(self.x, self.y)
             win.setBackgroundColor(self.bg)
             win.setTextColor(self.bracketColor) win.write(self.brackets:sub(1,1))
             win.setTextColor(self.fg)           win.write(self.text)
             win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
-            win.setCursorPos(x, y)
-            win.setTextColor(fg) win.setBackgroundColor(bg)
+            win.setBackgroundColor(bg) win.setTextColor(fg)
         end) expect("draw", opts.draw, "function")
         opts.event = default(opts.event, function(self, event, win)
             expect("event", event, "event")
@@ -62,11 +61,58 @@ return setmetatable({
                 end
                 win.write(line)
             end
-            win.setCursorPos(x, y)
-            win.setTextColor(fg) win.setBackgroundColor(bg)
+            win.setBackgroundColor(bg) win.setTextColor(fg)
         end) expect("draw", opts.draw, "function")
         opts.event = default(opts.event, function() end) expect("event", opts.event, "function")
-        return setmetatable(opts, { __name = "gui.button" })
+        return setmetatable(opts, { __name = "gui.text" })
+    end,
+    ---@param opts table
+    ---@return gui.textField
+    textField = function(opts)
+        opts.x = default(opts.x, 1) expect("x", opts.x, "number")
+        opts.y = default(opts.y, 1) expect("y", opts.y, "number")
+        opts.default = default(opts.default, "") expect("default", opts.default, "string")
+        opts.content = default(opts.content, opts.default) expect("content", opts.content, "string")
+        opts.selected = default(opts.selected, false) expect("selected", opts.selected, "boolean")
+        opts.w = default(opts.w, 12) expect("w", opts.w, "number")
+        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.draw = default(opts.draw, function(self, win)
+            expect("win", win, "table")
+            local x, y = win.getCursorPos()
+            local fg, bg = win.getTextColor(), win.getBackgroundColor()
+            win.setBackgroundColor(self.bg) win.setTextColor(self.fg)
+            win.setCursorPos(self.x, self.y)
+            win.write((" "):rep(self.w))
+            win.setCursorPos(self.x, self.y)
+            win.write(self.content:sub(#self.content - math.min(#self.content - 1, self.w - 2), #self.content))
+            win.setCursorBlink(self.selected)
+            win.setBackgroundColor(bg) win.setTextColor(fg)
+        end) expect("draw", opts.draw, "function")
+        opts.event = default(opts.event, function(self, event, win)
+            expect("event", event, "event")
+            expect("win", win, "table")
+            if event.type == "mouse_click" then
+                if event.button == 1 then
+                    local wx, wy = 1, 1
+                    if metatype(win.getPosition) == "function" then
+                        wx, wy = win.getPosition()
+                    end
+                    self.selected = (event.x - wx + 1 >= self.x and event.x - wx + 1 <= self.x + self.w - 1) and (event.y - wy + 1 == self.y)
+                end
+            end
+            if self.selected then
+                if event.type == "char" then
+                    self.content = self.content .. event.char
+                end
+                if event.type == "key" then
+                    if event.key == keys.backspace then
+                        self.content = self.content:sub(0, math.max(0, #self.content-1))
+                    end
+                end
+            end
+        end) expect("event", opts.event, "function")
+        return setmetatable(opts, { __name = "gui.textField" })
     end,
 }, {
     __name = "gui", __newindex = function(self, k, v)
