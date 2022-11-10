@@ -16,6 +16,6 @@ term.clear()
 dos.users.new("root", rootPassword, true)
 if fs.exists("startup.lua") then fs.delete("startup.lua") end
 fs.copy("dos/startup.lua", "startup.lua")
-dos.permit.grandPermission("startup.lua", "shell")
+dos.permit.grandAllPermission("startup.lua")
 fs.delete(shell.getRunningProgram())
 os.reboot()
