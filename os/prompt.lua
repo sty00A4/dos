@@ -133,7 +133,7 @@ return setmetatable({
         local win = window.create(TERM, math.floor(W/2 - w/2), math.floor(H/2 - h/2), w, h)
         term.redirect(win)
         local gText = gui.text{ x=1, y=2, w=w, h=h, content=text, fg = fg, bg = bg or theme.bg2, center = true }
-        local inputText = gui.textField{ x=2, y=h-1, w=w-2, default=default, hideChar=hideChar, fg = fg, bg=theme.bg2 }
+        local inputText = gui.textField{ x=2, y=h-1, w=w-2, default=default, hideChar=hideChar, fg = fg, bg=theme.bg2, selected = true }
         local okButton = gui.button {
             text="OK", x=w-#"OK]", y=h,
             fg=theme.ok, bg=bg or theme.bg2, bracketColor=bracketColor or theme.mark,
