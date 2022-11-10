@@ -9,6 +9,15 @@ lib.theme = require("dos.os.theme")
 lib.programs = {
     login = require("dos.os.programs.login"),
     desktop = require("dos.os.programs.desktop"),
+    -- todo shell program - dosh
+    -- todo user manager program - users
+    -- todo theme manager program - themes
+    -- todo settings program - settings
+    -- todo file manager prorgam - files
+    -- todo turtle control program - turt
+    -- todo peripheral manager prorgam - peripherals
+    -- todo printer program - print
+    -- todo rednet explorer program - redweb
 }
 
 local SHELL_RUN = shell.run
