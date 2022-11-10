@@ -10,8 +10,7 @@ if not fs.exists(".data") then fs.makeDir(".data") end
 if not fs.exists(".data/permits.txt") then local FILE = fs.open(".data/permits.txt", "w") FILE.write("{}") FILE.close() end
 term.clear()
 local rootPassword = "" 
-repeat
-    rootPassword = dos.prompt.input("root user password", "", "*", 20)
+repeat rootPassword = dos.prompt.input("root user password", "", "*", 20)
 until #rootPassword > 0
 term.clear()
 dos.users.new("root", rootPassword, true)

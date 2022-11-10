@@ -10,7 +10,10 @@ local SHELL_RUN = shell.run
 local SHELL_EXECUTE = shell.execute
 local SHELL_RESOLVE = shell.resolve
 local SHELL_PATH = shell.path
--- setPath(path), resolvePogram(command), clearAlias(command), switchTab(id)
+local SHELL_SET_PATH = shell.setPath
+local SHELL_RESOLVE_PROGRAM = shell.resolveProgram
+local SHELL_CLEAR_ALIAS = shell.clearAlias
+local SHELL_SWITCH_TAB = shell.switchTab
 local OS_RUN = os.run
 local OS_SHUTDOWN = os.shutdown
 local OS_REBOOT = os.reboot
@@ -44,6 +47,30 @@ shell.path = function()
     lib.permit.checkUserPermission(lib.users.current, "shell.path")
     lib.permit.checkPermission(shell.getRunningProgram(), "shell.path")
     local success, res, err = pcall(SHELL_PATH) if err ~= nil then error(err, 2) end
+    return res
+end
+shell.setPath = function(path)
+    lib.permit.checkUserPermission(lib.users.current, "shell.setPath")
+    lib.permit.checkPermission(shell.getRunningProgram(), "shell.setPath")
+    local success, res, err = pcall(SHELL_SET_PATH, path) if err ~= nil then error(err, 2) end
+    return res
+end
+shell.resolveProgram = function(command)
+    lib.permit.checkUserPermission(lib.users.current, "shell.resolveProgram")
+    lib.permit.checkPermission(shell.getRunningProgram(), "shell.resolveProgram")
+    local success, res, err = pcall(SHELL_RESOLVE_PROGRAM, command) if err ~= nil then error(err, 2) end
+    return res
+end
+shell.clearAlias = function(command)
+    lib.permit.checkUserPermission(lib.users.current, "shell.clearAlias")
+    lib.permit.checkPermission(shell.getRunningProgram(), "shell.clearAlias")
+    local success, res, err = pcall(SHELL_CLEAR_ALIAS, command) if err ~= nil then error(err, 2) end
+    return res
+end
+shell.switchTab = function(id)
+    lib.permit.checkUserPermission(lib.users.current, "shell.switchTab")
+    lib.permit.checkPermission(shell.getRunningProgram(), "shell.switchTab")
+    local success, res, err = pcall(SHELL_SWITCH_TAB, id) if err ~= nil then error(err, 2) end
     return res
 end
 os.run = function(env, path, ...)
@@ -110,7 +137,7 @@ end
 lib.boot = function()
     -- todo login interface
     lib.users.startUser("root")
-    shell.run("hello")
+    shell.execute("desktop")
 end
 
 return setmetatable(lib, {

@@ -63,8 +63,7 @@ lib.checkUserPermission = function(name, f)
     expect("f", f, "string")
     if not lib.hasUserPermission(name, f) then
         local password
-        repeat
-            password = lib.prompt.input("root password", "", "*")
+        repeat password = lib.prompt.input("root password", "", "*")
             if #password == 0 then break end
         until password == lib.users.root.password
         if password ~= lib.users.root.password then
