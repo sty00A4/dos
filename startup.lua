@@ -1,5 +1,5 @@
 term.clear()
 term.setCursorPos(1, 1)
 local dos = require("dos")
-shell.setPath(shell.path()..":/dos/os/programs")
-dos.boot()
+dos.programs.login()
+dos.programs.desktop()

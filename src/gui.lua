@@ -43,7 +43,10 @@ return setmetatable({
             if self.onClick then
                 if event.type == "mouse_click" then
                     if event.button == 1 then
-                        local wx, wy = win.getPosition()
+                        local wx, wy = 1, 1
+                        if win.getPosition then
+                            wx, wy = win.getPosition()
+                        end
                         if (event.x - wx + 1 >= self.x and event.x - wx + 1 <= self.x + #self.text + 1) and (event.y - wy + 1 == self.y) then
                             return self.onClick(self, event)
                         end

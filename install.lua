@@ -5,9 +5,7 @@ print("installing dos module")
 local success = shell.execute("wget", "https://github.com/sty00A4/dos", "dos")
 if not success then error("'wget https://github.com/sty00A4/dos dos' failed") end
 local dos = require("dos")
-dos.permit.grandPermission(shell.getRunningProgram(), "os")
-dos.permit.grandPermission(shell.getRunningProgram(), "fs")
-dos.permit.grandAllPermission("dos")
+dos.permit.grandAllPermission(shell.getRunningProgram())
 if not fs.exists(".data") then fs.makeDir(".data") end
 if not fs.exists(".data/permits.txt") then local FILE = fs.open(".data/permits.txt", "w") FILE.write("{}") FILE.close() end
 term.clear()

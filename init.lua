@@ -5,6 +5,10 @@ lib.event = require("dos.src.event")
 lib.prompt = require("dos.os.prompt")
 lib.permit = require("dos.os.permit")
 lib.users = require("dos.os.users")
+lib.programs = {
+    login = require("dos.os.programs.login"),
+    desktop = require("dos.os.programs.desktop"),
+}
 
 local SHELL_RUN = shell.run
 local SHELL_EXECUTE = shell.execute
@@ -174,12 +178,6 @@ fs.open = function(path, mode)
     lib.permit.checkPermission(shell.getRunningProgram(), "fs.open")
     local success, res, err = pcall(FS_OPEN, path, mode) if err ~= nil then error(err, 2) end
     return res
-end
-
-lib.boot = function()
-    -- todo login interface
-    lib.users.startUser("root")
-    shell.execute("desktop")
 end
 
 return setmetatable(lib, {
