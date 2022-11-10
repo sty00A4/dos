@@ -5,6 +5,7 @@ lib.event = require("dos.src.event")
 lib.prompt = require("dos.os.prompt")
 lib.permit = require("dos.os.permit")
 lib.users = require("dos.os.users")
+lib.theme = require("dos.os.theme")
 lib.programs = {
     login = require("dos.os.programs.login"),
     desktop = require("dos.os.programs.desktop"),

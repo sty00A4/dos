@@ -1,6 +1,7 @@
 require("dos.src.ext")
 local gui = require("dos.src.gui")
 local event = require("dos.src.event")
+local theme = require("dos.os.theme")
 return setmetatable({
     ---a confirm prompt
     ---@param text string
@@ -25,21 +26,21 @@ return setmetatable({
         end
         h = h or math.min(#text:linesFromWidth(w) + 3, H)
         expect("argument #3", h, "number") expect_min("argument #3", h, 1)
-        fg = fg or colors.white expect("argument #4", fg, "number")
-        bg = bg or colors.black expect("argument #5", bg, "number")
-        bracketColor = bracketColor or colors.gray expect("argument #6", bracketColor, "number")
+        fg = fg or theme.fg expect("argument #4", fg, "number")
+        bg = bg or theme.bg expect("argument #5", bg, "number")
+        bracketColor = bracketColor or theme.bg2 expect("argument #6", bracketColor, "number")
         local TERM = term.current()
         local win = window.create(TERM, math.floor(W/2 - w/2), math.floor(H/2 - h/2), w, h)
         term.redirect(win)
-        local gText = gui.text{ x=1, y=2, w=w, h=h, content=text, fg = fg, bg = bg or colors.gray, center = true }
+        local gText = gui.text{ x=1, y=2, w=w, h=h, content=text, fg = fg, bg = bg or theme.bg2, center = true }
         local cancelButton = gui.button {
             text="CANCEL", x=w-#"CANCEL]", y=h,
-            fg=colors.red, bg=bg or colors.gray, bracketColor=bracketColor or colors.lightGray,
+            fg=theme.fail, bg=bg or theme.bg2, bracketColor=bracketColor or theme.mark,
             onClick = function() return true end
         }
         local okButton = gui.button {
             text="OK", x=w-#"OK][CANCEL]", y=h,
-            fg=colors.green, bg=bg or colors.gray, bracketColor=bracketColor or colors.lightGray,
+            fg=theme.ok, bg=bg or theme.bg2, bracketColor=bracketColor or theme.mark,
             onClick = function() return true end
         }
         term.redirect(TERM)
@@ -77,16 +78,16 @@ return setmetatable({
         end
         h = h or math.min(#text:linesFromWidth(w) + 3, H)
         expect("argument #3", h, "number") expect_min("argument #3", h, 1)
-        fg = fg or colors.white expect("argument #4", fg, "number")
-        bg = bg or colors.black expect("argument #5", bg, "number")
-        bracketColor = bracketColor or colors.gray expect("argument #6", bracketColor, "number")
+        fg = fg or theme.fg expect("argument #4", fg, "number")
+        bg = bg or theme.bg expect("argument #5", bg, "number")
+        bracketColor = bracketColor or theme.bg2 expect("argument #6", bracketColor, "number")
         local TERM = term.current()
         local win = window.create(TERM, math.floor(W/2 - w/2), math.floor(H/2 - h/2), w, h)
         term.redirect(win)
-        local gText = gui.text{ x=1, y=2, w=w, h=h, content=text, fg = fg, bg = bg or colors.gray, center = true }
+        local gText = gui.text{ x=1, y=2, w=w, h=h, content=text, fg = fg, bg = bg or theme.bg2, center = true }
         local okButton = gui.button {
             text="OK", x=w-#"OK]", y=h,
-            fg=colors.green, bg=bg or colors.gray, bracketColor=bracketColor or colors.lightGray,
+            fg=theme.ok, bg=bg or theme.bg2, bracketColor=bracketColor or theme.mark,
             onClick = function() return true end
         }
         term.redirect(TERM)
@@ -125,17 +126,17 @@ return setmetatable({
         end
         h = h or math.min(#text:linesFromWidth(w) + 4, H)
         expect("argument #5", h, "number") expect_min("argument #5", h, 1)
-        fg = fg or colors.white expect("argument #6", fg, "number")
-        bg = bg or colors.black expect("argument #7", bg, "number")
-        bracketColor = bracketColor or colors.gray expect("argument #7", bracketColor, "number")
+        fg = fg or theme.fg expect("argument #6", fg, "number")
+        bg = bg or theme.bg expect("argument #7", bg, "number")
+        bracketColor = bracketColor or theme.bg2 expect("argument #7", bracketColor, "number")
         local TERM = term.current()
         local win = window.create(TERM, math.floor(W/2 - w/2), math.floor(H/2 - h/2), w, h)
         term.redirect(win)
-        local gText = gui.text{ x=1, y=2, w=w, h=h, content=text, fg = fg, bg = bg or colors.gray, center = true }
-        local inputText = gui.textField{ x=2, y=h-1, w=w-2, default=default, hideChar=hideChar, fg = fg, bg=colors.gray }
+        local gText = gui.text{ x=1, y=2, w=w, h=h, content=text, fg = fg, bg = bg or theme.bg2, center = true }
+        local inputText = gui.textField{ x=2, y=h-1, w=w-2, default=default, hideChar=hideChar, fg = fg, bg=theme.bg2 }
         local okButton = gui.button {
             text="OK", x=w-#"OK]", y=h,
-            fg=colors.green, bg=bg or colors.gray, bracketColor=bracketColor or colors.lightGray,
+            fg=theme.ok, bg=bg or theme.bg2, bracketColor=bracketColor or theme.mark,
             onClick = function() return true end
         }
         term.redirect(TERM)
@@ -174,16 +175,16 @@ return setmetatable({
         end
         h = h or math.min(#text:linesFromWidth(w) + 4, H)
         expect("argument #3", h, "number") expect_min("argument #3", h, 1)
-        fg = fg or colors.white expect("argument #4", fg, "number")
-        bg = bg or colors.black expect("argument #5", bg, "number")
-        bracketColor = bracketColor or colors.gray expect("argument #6", bracketColor, "number")
+        fg = fg or theme.fg expect("argument #4", fg, "number")
+        bg = bg or theme.bg expect("argument #5", bg, "number")
+        bracketColor = bracketColor or theme.bg2 expect("argument #6", bracketColor, "number")
         local TERM = term.current()
         local win = window.create(TERM, math.floor(W/2 - w/2), math.floor(H/2 - h/2), w, h)
         term.redirect(win)
         local gText = gui.text{ x=1, y=2, w=w, h=h, content=text, fg=fg, bg=bg, center = true }
         local cancelButton = gui.button {
             text="CANCEL", x=w-#"CANCEL]", y=h,
-            fg=colors.red, bg=bg, bracketColor=bracketColor,
+            fg=theme.fail, bg=bg, bracketColor=bracketColor,
             onClick = function() return true end
         }
         local onceButton = gui.button {
@@ -193,7 +194,7 @@ return setmetatable({
         }
         local allowButton = gui.button {
             text="ALLOW", x=w-#"ALLOW][ONCE][CANCEL]", y=h,
-            fg=colors.green, bg=bg, bracketColor=bracketColor,
+            fg=theme.ok, bg=bg, bracketColor=bracketColor,
             onClick = function() return true end
         }
         term.redirect(TERM)

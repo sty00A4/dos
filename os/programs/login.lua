@@ -6,6 +6,7 @@ return function()
         table.insert(userButtons, dos.gui.button {
             x = W/2 - #("["..name.."]")/2, y = H/2 - #dos.users.users/2,
             text = name,
+            bg = dos.theme.bg, fg = dos.theme.fg, bracketColor = dos.theme.bg2,
             onClick = function(self)
                 local password
                 repeat
@@ -31,7 +32,7 @@ return function()
             button:draw(term)
         end
         local event = dos.event.new(os.pullEventsRaw({ "mouse_click", "key", "terminate" }))
-        if event.type == "terminate" then os.shutdown() end
+        if event.type == "terminate" then error("terminated") end
         for _, button in ipairs(userButtons) do
             run = not button:event(event, term)
         end
