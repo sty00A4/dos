@@ -24,7 +24,12 @@ local SETTINGS_SET = settings.set
 local SETTINGS_UNSET = settings.unset
 local SETTINGS_CLEAR = settings.clear
 local SETTINGS_LOAD = settings.load
--- fs, http, io, turtle
+local FS_MAKE_DIR = fs.makeDir
+local FS_MOVE = fs.move
+local FS_COPY = fs.copy
+local FS_DELETE = fs.delete
+local FS_OPEN = fs.open
+-- http, io, turtle
 shell.run = function(...)
     lib.permit.checkUserPermission(lib.users.current, "shell.run")
     lib.permit.checkPermission(shell.getRunningProgram(), "shell.run")
@@ -131,6 +136,43 @@ settings.load = function(sPath)
     lib.permit.checkUserPermission(lib.users.current, "settings.load")
     lib.permit.checkPermission(shell.getRunningProgram(), "settings.load")
     local success, res, err = pcall(SETTINGS_LOAD, sPath) if err ~= nil then error(err, 2) end
+    return res
+end
+fs.makeDir = function(path)
+    lib.permit.checkUserPermission(lib.users.current, "fs.makeDir")
+    lib.permit.checkPathPermission(lib.users.current, path)
+    lib.permit.checkPermission(shell.getRunningProgram(), "fs.makeDir")
+    local success, res, err = pcall(FS_MAKE_DIR, path) if err ~= nil then error(err, 2) end
+    return res
+end
+fs.move = function(path, dest)
+    lib.permit.checkUserPermission(lib.users.current, "fs.move")
+    lib.permit.checkPathPermission(lib.users.current, path)
+    lib.permit.checkPathPermission(lib.users.current, dest)
+    lib.permit.checkPermission(shell.getRunningProgram(), "fs.move")
+    local success, res, err = pcall(FS_MOVE, path, dest) if err ~= nil then error(err, 2) end
+    return res
+end
+fs.copy = function(path, dest)
+    lib.permit.checkUserPermission(lib.users.current, "fs.copy")
+    lib.permit.checkPathPermission(lib.users.current, path)
+    lib.permit.checkPathPermission(lib.users.current, dest)
+    lib.permit.checkPermission(shell.getRunningProgram(), "fs.copy")
+    local success, res, err = pcall(FS_COPY, path, dest) if err ~= nil then error(err, 2) end
+    return res
+end
+fs.delete = function(path)
+    lib.permit.checkUserPermission(lib.users.current, "fs.delete")
+    lib.permit.checkPathPermission(lib.users.current, path)
+    lib.permit.checkPermission(shell.getRunningProgram(), "fs.delete")
+    local success, res, err = pcall(FS_DELETE, path) if err ~= nil then error(err, 2) end
+    return res
+end
+fs.open = function(path, mode)
+    lib.permit.checkUserPermission(lib.users.current, "fs.open")
+    lib.permit.checkPathPermission(lib.users.current, path)
+    lib.permit.checkPermission(shell.getRunningProgram(), "fs.open")
+    local success, res, err = pcall(FS_OPEN, path, mode) if err ~= nil then error(err, 2) end
     return res
 end
 

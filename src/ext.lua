@@ -74,6 +74,13 @@ table.containsKey = function(t, key)
 end
 ---@param t table
 table.tostring = function(t) return "{ "..table.join(t, ", ", true).." }" end
+---returns true if `start` is the sub string of `s` at the beginning
+---@param s string
+---@param start string
+---@return boolean
+string.startsWith = function(s, start)
+    return s:sub(1, #start) == start
+end
 ---returns a table containing the parts of the string `s` split by the seperator `sep`
 ---@param s string
 ---@param sep string

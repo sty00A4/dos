@@ -5,7 +5,9 @@ print("installing dos module")
 local success = shell.execute("wget", "https://github.com/sty00A4/dos", "dos")
 if not success then error("'wget https://github.com/sty00A4/dos dos' failed") end
 local dos = require("dos")
-dos.permit.grandPermisstion(shell.getRunningProgram(), "os.reboot")
+dos.permit.grandPermission(shell.getRunningProgram(), "os")
+dos.permit.grandPermission(shell.getRunningProgram(), "fs")
+dos.permit.grandAllPermission("dos")
 if not fs.exists(".data") then fs.makeDir(".data") end
 if not fs.exists(".data/permits.txt") then local FILE = fs.open(".data/permits.txt", "w") FILE.write("{}") FILE.close() end
 term.clear()
@@ -16,6 +18,6 @@ term.clear()
 dos.users.new("root", rootPassword, true)
 if fs.exists("startup.lua") then fs.delete("startup.lua") end
 fs.copy("dos/startup.lua", "startup.lua")
-dos.permit.grandPermisstion("startup.lua", "shell")
+dos.permit.grandPermission("startup.lua", "shell")
 fs.delete(shell.getRunningProgram())
 os.reboot()
