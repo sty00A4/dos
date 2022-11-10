@@ -8,7 +8,7 @@ local dos = require("dos")
 dos.permit.grandPermisstion(shell.getRunningProgram(), "os.reboot")
 if not fs.exists(".data") then fs.makeDir(".data") end
 if not fs.exists(".data/permits.txt") then local FILE = fs.open(".data/permits.txt", "w") FILE.write("{}") FILE.close() end
-local FILE
+term.clear()
 local rootPassword = "" 
 repeat
     rootPassword = dos.prompt.input("root user password", "", "*", 20)
@@ -18,5 +18,5 @@ dos.users.new("root", rootPassword, true)
 if fs.exists("startup.lua") then fs.delete("startup.lua") end
 fs.copy("dos/startup.lua", "startup.lua")
 dos.permit.grandPermisstion("startup.lua", "shell")
---fs.delete(shell.getRunningProgram())
+fs.delete(shell.getRunningProgram())
 os.reboot()

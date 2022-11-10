@@ -38,6 +38,9 @@ end
 lib.hasUserPermission = function(name, f)
     expect("name", name, "string")
     expect("f", f, "string")
+    if type(lib.users.getUser(name).permits) == "boolean" and lib.users.getUser(name).permits then
+        return true
+    end
     return table.containsStart(lib.users.getUser(name).permits, f)
 end
 lib.checkPermission = function(path, f)
