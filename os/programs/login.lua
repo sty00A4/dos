@@ -20,6 +20,7 @@ return function()
                 until password == user.password
                 term.reset()
                 if password == user.password then
+                    dos.users.startUser(name)
                     return true
                 end
             end

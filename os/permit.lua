@@ -7,6 +7,7 @@ if not fs.exists(".data/permits.txt") then
 end
 local FPERMIT = fs.open(".data/permits.txt", "r")
 lib.permits = textutils.unserialize(FPERMIT.readAll())
+if not lib.permits then lib.permits = {} end
 FPERMIT.close()
 
 lib.grandPermission = function(path, f)
