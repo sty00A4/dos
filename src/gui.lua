@@ -18,7 +18,7 @@ return setmetatable({
         win.setTextColor(fg)
     end,
     ---@param opts table
-    ---@return gui.button
+    ---@return gui.page
     page = function(opts)
         local W, H = term.getSize()
         opts.x = default(opts.x, 1) expect("x", opts.x, "number")
@@ -137,14 +137,18 @@ return setmetatable({
             local fg, bg = win.getTextColor(), win.getBackgroundColor()
             win.setBackgroundColor(self.bg) win.setTextColor(self.fg)
             for i, line in ipairs(self.content:linesFromWidth(self.w)) do
+                if i > self.h then break end
+                win.setCursorPos(self.x, self.y+i-2)
+                win.write((" "):rep(self.w))
                 if self.center then
-                    win.setCursorPos(self.x+self.w/2-#line/2, self.y+i-1)
+                    win.setCursorPos(self.x+self.w/2-#line/2, self.y+i-2)
                 else
-                    win.setCursorPos(self.x, self.y+i-1)
+                    win.setCursorPos(self.x, self.y+i-2)
                 end
                 win.write(line)
             end
             win.setBackgroundColor(bg) win.setTextColor(fg)
+            win.setCursorPos(x, y)
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
         opts.update = default(opts.update, function(self, win, parent)
@@ -224,6 +228,54 @@ return setmetatable({
         expect("update2", opts.update2, "function", "nil")
         expect("event2", opts.event2, "function", "nil")
         return setmetatable(opts, { __name = "gui.textField" })
+    end,
+    ---@param opts table
+    ---@return gui.checkbox
+    checkbox = function(opts)
+        opts.x = default(math.floor(opts.x), 1) expect("x", opts.x, "number")
+        opts.y = default(math.floor(opts.y), 1) expect("y", opts.y, "number")
+        opts.x = math.floor(opts.x)
+        opts.y = math.floor(opts.y)
+        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
+        opts.brackets = default(opts.brackets, "()") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
+        opts.symbol = default(opts.symbol, "O") expect("symbol", opts.symbol, "string")
+        opts.checked = default(opts.checked, false) expect("checked", opts.checked, "boolean")
+        opts.draw = default(opts.draw, function(self, win, parent)
+            local x, y = win.getCursorPos()
+            local fg, bg = win.getTextColor(), win.getBackgroundColor()
+            win.setCursorPos(self.x, self.y)
+            win.setBackgroundColor(self.bg)
+            win.setTextColor(self.bracketColor) win.write(self.brackets:sub(1,1))
+            win.setTextColor(self.fg)           win.write(self.checked and self.symbol or " ")
+            win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
+            win.setBackgroundColor(bg) win.setTextColor(fg)
+            if type(self.draw2) == "function" then return self:draw2(win, parent) end
+        end) expect("draw", opts.draw, "function")
+        opts.update = default(opts.update, function(self, win, parent)
+            if type(self.update2) == "function" then return self:update2(win, parent) end
+        end) expect("update", opts.update, "function")
+        opts.event = default(opts.event, function(self, event, win, parent)
+            expect("event", event, "event")
+            expect("win", win, "table", "gui.page")
+            if event.type == "mouse_click" then
+                if event.button == 1 then
+                    local wx, wy = 1, 1
+                    if win.getPosition then
+                        wx, wy = win.getPosition()
+                    end
+                    if (event.x - wx + 1 >= self.x and event.x - wx + 1 <= self.x + 2) and (event.y - wy + 1 == self.y) then
+                        self.checked = not self.checked
+                    end
+                end
+            end
+            if type(self.event2) == "function" then return self:event2(event, win, parent) end
+        end) expect("event", opts.event, "function")
+        expect("draw2", opts.draw2, "function", "nil")
+        expect("update2", opts.update2, "function", "nil")
+        expect("event2", opts.event2, "function", "nil")
+        return setmetatable(opts, { __name = "gui.checkbox" })
     end,
     run = function(page)
         local dos = require "dos"
