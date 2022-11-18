@@ -71,8 +71,8 @@ return setmetatable({
     ---@param opts table
     ---@return gui.button
     button = function(opts)
-        opts.x = default(math.floor(opts.x), 1) expect("x", opts.x, "number")
-        opts.y = default(math.floor(opts.y), 1) expect("y", opts.y, "number")
+        opts.x = default(opts.x, 1) expect("x", opts.x, "number")
+        opts.y = default(opts.y, 1) expect("y", opts.y, "number")
         opts.x = math.floor(opts.x)
         opts.y = math.floor(opts.y)
         opts.text = default(opts.text, "button") expect("text", opts.text, "string")
@@ -89,6 +89,7 @@ return setmetatable({
             win.setTextColor(self.fg)           win.write(self.text)
             win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
             win.setBackgroundColor(bg) win.setTextColor(fg)
+            win.setCursorPos(x, y)
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
         opts.update = default(opts.update, function(self, win, parent)
@@ -104,7 +105,7 @@ return setmetatable({
                         if win.getPosition then
                             wx, wy = win.getPosition()
                         end
-                        if (event.x - wx + 1 >= self.x and event.x - wx + 1 <= self.x + #self.text + 1) and (event.y - wy + 1 == self.y) then
+                        if self:_mouseTouch(event.x - wx + 1, event.y - wy + 1) then
                             return self.onClick(self, event, parent)
                         end
                     end
@@ -116,6 +117,9 @@ return setmetatable({
         expect("draw2", opts.draw2, "function", "nil")
         expect("update2", opts.update2, "function", "nil")
         expect("event2", opts.event2, "function", "nil")
+        opts._mouseTouch = function(self, x, y)
+            return (x >= self.x and x <= self.x + #self.text + 1) and (y == self.y)
+        end
         return setmetatable(opts, { __name = "gui.button" })
     end,
     ---@param opts table
@@ -160,6 +164,9 @@ return setmetatable({
         expect("draw2", opts.draw2, "function", "nil")
         expect("update2", opts.update2, "function", "nil")
         expect("event2", opts.event2, "function", "nil")
+        opts._mouseTouch = function(self, x, y)
+            return (x >= self.x and x <= self.x + self.w - 1) and (y >= self.y and y <= self.y + self.h - 1)
+        end
         return setmetatable(opts, { __name = "gui.text" })
     end,
     ---@param opts table
@@ -191,6 +198,7 @@ return setmetatable({
             end
             win.setCursorBlink(self.selected)
             win.setBackgroundColor(bg) win.setTextColor(fg)
+            win.setCursorPos(x, y)
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
         opts.update = default(opts.draw, function(self, win, parent)
@@ -209,7 +217,7 @@ return setmetatable({
                     if metatype(win.getPosition) == "function" then
                         wx, wy = win.getPosition()
                     end
-                    self.selected = (event.x - wx + 1 >= self.x and event.x - wx + 1 <= self.x + self.w - 1) and (event.y - wy + 1 == self.y)
+                    self.selected = self:_mouseTouch(event.x - wx + 1, event.y - wy + 1)
                 end
             end
             if self.selected then
@@ -220,6 +228,9 @@ return setmetatable({
                     if event.key == keys.backspace then
                         self.content = self.content:sub(0, math.max(0, #self.content-1))
                     end
+                    if event.key == keys.enter then
+                        self.selected = false
+                    end
                 end
             end
             if type(self.event2) == "function" then return self:event2(event, win, parent) end
@@ -227,13 +238,16 @@ return setmetatable({
         expect("draw2", opts.draw2, "function", "nil")
         expect("update2", opts.update2, "function", "nil")
         expect("event2", opts.event2, "function", "nil")
+        opts._mouseTouch = function(self, x, y)
+            return (x >= self.x and x <= self.x + self.w - 1) and (y == self.y)
+        end
         return setmetatable(opts, { __name = "gui.textField" })
     end,
     ---@param opts table
     ---@return gui.checkbox
     checkbox = function(opts)
-        opts.x = default(math.floor(opts.x), 1) expect("x", opts.x, "number")
-        opts.y = default(math.floor(opts.y), 1) expect("y", opts.y, "number")
+        opts.x = default(opts.x, 1) expect("x", opts.x, "number")
+        opts.y = default(opts.y, 1) expect("y", opts.y, "number")
         opts.x = math.floor(opts.x)
         opts.y = math.floor(opts.y)
         opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
@@ -251,6 +265,7 @@ return setmetatable({
             win.setTextColor(self.fg)           win.write(self.checked and self.symbol or " ")
             win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
             win.setBackgroundColor(bg) win.setTextColor(fg)
+            win.setCursorPos(x, y)
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
         opts.update = default(opts.update, function(self, win, parent)
@@ -265,7 +280,7 @@ return setmetatable({
                     if win.getPosition then
                         wx, wy = win.getPosition()
                     end
-                    if (event.x - wx + 1 >= self.x and event.x - wx + 1 <= self.x + 2) and (event.y - wy + 1 == self.y) then
+                    if self:_mouseTouch(event.x - wx + 1, event.y - wy + 1) then
                         self.checked = not self.checked
                     end
                 end
@@ -275,7 +290,89 @@ return setmetatable({
         expect("draw2", opts.draw2, "function", "nil")
         expect("update2", opts.update2, "function", "nil")
         expect("event2", opts.event2, "function", "nil")
+        opts._mouseTouch = function(self, x, y)
+            return (x >= self.x and x <= self.x + 2) and (y == self.y)
+        end
         return setmetatable(opts, { __name = "gui.checkbox" })
+    end,
+    ---@param opts table
+    ---@return gui.slider
+    slider = function(opts)
+        opts.x = default(opts.x, 1) expect("x", opts.x, "number")
+        opts.y = default(opts.y, 1) expect("y", opts.y, "number")
+        opts.x = math.floor(opts.x)
+        opts.y = math.floor(opts.y)
+        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.length = default(opts.length, 2) expect("length", opts.length, "number") expect_min("length", opts.length, 2)
+        opts.length = math.floor(opts.length)
+        opts.current = default(opts.current, 0) expect("current", opts.current, "number") expect_min("current", opts.current, 0)
+        opts.current = math.floor(opts.current)
+        opts.value = opts.current / opts.length
+        opts.symbol = default(opts.symbol, " ") expect("symbol", opts.symbol, "string") expect_min("symbol length", #opts.symbol, 1)
+        opts.selected = default(opts.selected, false) expect("selected", opts.selected, "boolean")
+        opts.draw = default(opts.draw, function(self, win, parent)
+            local x, y = win.getCursorPos()
+            local fg, bg = win.getTextColor(), win.getBackgroundColor()
+            win.setCursorPos(self.x, self.y)
+            win.setBackgroundColor(self.bg)
+            win.write((" "):rep(self.length))
+            win.setBackgroundColor(self.fg)
+            win.setCursorPos(self.x + self.current, self.y) win.write(self.symbol)
+            win.setBackgroundColor(bg) win.setTextColor(fg)
+            win.setCursorPos(x, y)
+            if type(self.draw2) == "function" then return self:draw2(win, parent) end
+        end) expect("draw", opts.draw, "function")
+        opts.update = default(opts.update, function(self, win, parent)
+            self.current = math.min(math.max(self.current, 0), self.length)
+            self.value = self.current / self.length
+            if type(self.update2) == "function" then return self:update2(win, parent) end
+        end) expect("update", opts.update, "function")
+        opts.event = default(opts.event, function(self, event, win, parent)
+            expect("event", event, "event")
+            expect("win", win, "table", "gui.page")
+            if event.type == "mouse_click" then
+                if event.button == 1 then
+                    local wx, wy = 1, 1
+                    if win.getPosition then
+                        wx, wy = win.getPosition()
+                    end
+                    if self:_mouseTouch(event.x - wx + 1, event.y - wy + 1) then
+                        self.selected = true
+                        self.current = math.min(math.max(event.x - wx + 1 - self.x, 0), self.length - 1)
+                    end
+                end
+            end
+            if self.selected then
+                if event.type == "mouse_drag" then
+                    if event.button == 1 then
+                        local wx, wy = 1, 1
+                        if win.getPosition then
+                            wx, wy = win.getPosition()
+                        end
+                        self.current = math.min(math.max(event.x - wx + 1 - self.x, 0), self.length - 1)
+                    end
+                end
+                if event.type == "mouse_up" then
+                    if event.button == 1 then
+                        local wx, wy = 1, 1
+                        if win.getPosition then
+                            wx, wy = win.getPosition()
+                        end
+                        self.selected = false
+                        self.current = math.min(math.max(event.x - wx + 1 - self.x, 0), self.length - 1)
+                    end
+                end
+            end
+            if type(self.event2) == "function" then return self:event2(event, win, parent) end
+        end) expect("event", opts.event, "function")
+        expect("draw2", opts.draw2, "function", "nil")
+        expect("update2", opts.update2, "function", "nil")
+        expect("event2", opts.event2, "function", "nil")
+        opts._mouseTouch = function(self, x, y)
+            return (x >= self.x and x <= self.x + self.length - 1) and (y == self.y)
+        end
+        return setmetatable(opts, { __name = "gui.slider" })
     end,
     run = function(page)
         local dos = require "dos"

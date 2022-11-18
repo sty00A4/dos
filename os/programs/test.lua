@@ -21,6 +21,10 @@ return function()
             x = 1, y = 4, content = "powjrepwioebnrfigjwbenirug", center = true,
             w = 12, h = 3, bg = dos.theme.bg2,
         },
+        dos.gui.slider {
+            x = 4, y = 7, length = 10,
+            bg = dos.theme.bg2,
+        },
     }}
     return dos.gui.run(page)
 end
