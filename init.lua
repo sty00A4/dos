@@ -9,6 +9,7 @@ lib.theme = require("dos.os.theme")
 lib.programs = {
     login = require("dos.os.programs.login"),
     desktop = require("dos.os.programs.desktop"),
+    test = require("dos.os.programs.test"),
     -- todo shell program - dosh
     -- todo user manager program - users
     -- todo theme manager program - themes
