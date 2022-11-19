@@ -217,6 +217,7 @@ return setmetatable({
         opts.y = math.floor(opts.y)
         opts.default = default(opts.default, "") expect("default", opts.default, "string")
         expect("hideChar", opts.hideChar, "string", "nil")
+        expect("chars", opts.chars, "string", "nil")
         opts.content = default(opts.content, opts.default) expect("content", opts.content, "string")
         opts.selected = default(opts.selected, false) expect("selected", opts.selected, "boolean")
         opts.w = default(opts.w, 12) expect("w", opts.w, "number")
@@ -266,6 +267,11 @@ return setmetatable({
                 end
                 if self.selected then
                     if event.type == "char" then
+                        if self.chars then
+                            if not self.chars:find(event.char) then
+                                return false
+                            end
+                        end
                         self.content = self.content .. event.char
                     end
                     if event.type == "key" then

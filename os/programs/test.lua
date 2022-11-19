@@ -34,6 +34,7 @@ return function()
         dos.gui.textField {
             x = 1, y = 6, w = 12,
             bg = dos.theme.bg2,
+            chars = "0123456789"
         },
     }}
     return dos.gui.run(page)
