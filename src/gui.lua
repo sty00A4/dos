@@ -104,7 +104,6 @@ return setmetatable({
             expect("win", win, "table", "gui.page")
             expect("parent", parent, "gui.page", "nil")
             if self.visible then
-                local x, y = win.getCursorPos()
                 local fg, bg = win.getTextColor(), win.getBackgroundColor()
                 win.setCursorPos(self.x, self.y)
                 win.setBackgroundColor(self.bg)
@@ -112,7 +111,6 @@ return setmetatable({
                 win.setTextColor(self.fg)           win.write(self.text)
                 win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
                 win.setBackgroundColor(bg) win.setTextColor(fg)
-                win.setCursorPos(x, y)
             end
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
@@ -171,22 +169,20 @@ return setmetatable({
             expect("win", win, "table", "gui.page")
             expect("parent", parent, "gui.page", "nil")
             if self.visible then
-                local x, y = win.getCursorPos()
                 local fg, bg = win.getTextColor(), win.getBackgroundColor()
                 win.setBackgroundColor(self.bg) win.setTextColor(self.fg)
                 for i, line in ipairs(self.content:linesFromWidth(self.w)) do
                     if i > self.h then break end
-                    win.setCursorPos(self.x, self.y+i-2)
+                    win.setCursorPos(self.x, self.y+i-1)
                     win.write((" "):rep(self.w))
                     if self.center then
-                        win.setCursorPos(self.x+self.w/2-#line/2, self.y+i-2)
+                        win.setCursorPos(self.x+self.w/2-#line/2, self.y+i-1)
                     else
-                        win.setCursorPos(self.x, self.y+i-2)
+                        win.setCursorPos(self.x, self.y+i-1)
                     end
                     win.write(line)
                 end
                 win.setBackgroundColor(bg) win.setTextColor(fg)
-                win.setCursorPos(x, y)
             end
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
@@ -230,7 +226,6 @@ return setmetatable({
             expect("win", win, "table", "gui.page")
             expect("parent", parent, "gui.page", "nil")
             if self.visible then
-                local x, y = win.getCursorPos()
                 local fg, bg = win.getTextColor(), win.getBackgroundColor()
                 win.setBackgroundColor(self.bg) win.setTextColor(self.fg)
                 win.setCursorPos(self.x, self.y)
@@ -243,7 +238,6 @@ return setmetatable({
                 end
                 win.setCursorBlink(self.selected)
                 win.setBackgroundColor(bg) win.setTextColor(fg)
-                win.setCursorPos(x, y)
             end
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
@@ -313,7 +307,6 @@ return setmetatable({
             expect("win", win, "table", "gui.page")
             expect("parent", parent, "gui.page", "nil")
             if self.visible then
-                local x, y = win.getCursorPos()
                 local fg, bg = win.getTextColor(), win.getBackgroundColor()
                 win.setCursorPos(self.x, self.y)
                 win.setBackgroundColor(self.bg)
@@ -321,7 +314,6 @@ return setmetatable({
                 win.setTextColor(self.fg)           win.write(self.checked and self.symbol or " ")
                 win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
                 win.setBackgroundColor(bg) win.setTextColor(fg)
-                win.setCursorPos(x, y)
             end
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
@@ -378,7 +370,6 @@ return setmetatable({
         opts.selected = default(opts.selected, false) expect("selected", opts.selected, "boolean")
         opts.draw = default(opts.draw, function(self, win, parent)
             if self.visible then
-                local x, y = win.getCursorPos()
                 local fg, bg = win.getTextColor(), win.getBackgroundColor()
                 win.setCursorPos(self.x, self.y)
                 win.setBackgroundColor(self.bg)
@@ -386,7 +377,6 @@ return setmetatable({
                 win.setBackgroundColor(self.fg)
                 win.setCursorPos(self.x + self.current, self.y) win.write(self.symbol)
                 win.setBackgroundColor(bg) win.setTextColor(fg)
-                win.setCursorPos(x, y)
             end
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
@@ -394,7 +384,7 @@ return setmetatable({
         opts.update = default(opts.update, function(self, win, parent)
             if self.active then
                 self.current = math.min(math.max(self.current, 0), self.length)
-                self.value = self.current / self.length
+                self.value = self.current / (self.length - 1)
             end
             if type(self.update2) == "function" then return self:update2(win, parent) end
         end) expect("update", opts.update, "function")
@@ -445,6 +435,79 @@ return setmetatable({
             return (x >= self.x and x <= self.x + self.length - 1) and (y == self.y)
         end
         return setmetatable(opts, { __name = "gui.slider" })
+    end,
+    ---@param opts table
+    ---@return gui.nav
+    nav = function(opts)
+        opts.active = default(opts.active, true) expect("active", opts.active, "boolean")
+        opts.visible = default(opts.visible, true) expect("visible", opts.visible, "boolean")
+        opts.x = default(opts.x, 1) expect("x", opts.x, "number")
+        opts.y = default(opts.y, 1) expect("y", opts.y, "number")
+        opts.x = math.floor(opts.x)
+        opts.y = math.floor(opts.y)
+        opts.buttons = default(opts.buttons, {}) expect("buttons", opts.buttons, "table")
+        for k, e in ipairs(opts.buttons) do expect("buttons."..k, e, "string") end
+        opts._offsets = {}
+        local _x = 0 for k, e in ipairs(opts.buttons) do opts._offsets[k] = _x  _x = _x + #e + 2 end
+        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
+        opts.brackets = default(opts.brackets, "[]") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
+        opts.draw = default(opts.draw, function(self, win, parent)
+            expect("win", win, "table", "gui.page")
+            expect("parent", parent, "gui.page", "nil")
+            if self.visible then
+                local fg, bg = win.getTextColor(), win.getBackgroundColor()
+                win.setCursorPos(self.x, self.y)
+                for _, name in ipairs(self.buttons) do
+                    win.setBackgroundColor(self.bg)
+                    win.setTextColor(self.bracketColor) win.write(self.brackets:sub(1,1))
+                    win.setTextColor(self.fg)           win.write(name)
+                    win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
+                end
+                win.setBackgroundColor(bg) win.setTextColor(fg)
+            end
+            if type(self.draw2) == "function" then return self:draw2(win, parent) end
+        end) expect("draw", opts.draw, "function")
+        opts.update = default(opts.update, function(self, win, parent)
+            expect("win", win, "table", "gui.page")
+            expect("parent", parent, "gui.page", "nil")
+            if type(self.update2) == "function" then return self:update2(win, parent) end
+        end) expect("update", opts.update, "function")
+        opts.init = default(opts.init, function(self, win, parent) self:update(win, parent) end) expect("init", opts.init, "function")
+        opts.event = default(opts.event, function(self, event, win, parent)
+            expect("event", event, "event")
+            expect("win", win, "table", "gui.page")
+            expect("parent", parent, "gui.page", "nil")
+            if self.active then
+                if self.onClick then
+                    if event.type == "mouse_click" then
+                        if event.button == 1 then
+                            local i = 1
+                            while i <= #self.buttons do
+                                local wx, wy = 1, 1
+                                if win.getPosition then
+                                    wx, wy = win.getPosition()
+                                end
+                                if self:_mouseTouch(event.x - wx + 1, event.y - wy + 1, i) then
+                                    return self.onClick(self, i, event, parent)
+                                end
+                                i = i + 1
+                            end
+                        end
+                    end
+                end
+            end
+            if type(self.event2) == "function" then return self:event2(event, win, parent) end
+        end) expect("event", opts.event, "function")
+        expect("onClick", opts.onClick, "function", "nil")
+        expect("draw2", opts.draw2, "function", "nil")
+        expect("update2", opts.update2, "function", "nil")
+        expect("event2", opts.event2, "function", "nil")
+        opts._mouseTouch = function(self, x, y, i)
+            return (x >= self._offsets[i] + self.x and x <= self._offsets[i] + self.x + #self.buttons[i] + 1) and (y == self.y)
+        end
+        return setmetatable(opts, { __name = "gui.button" })
     end,
     run = function(page)
         local dos = require "dos"
