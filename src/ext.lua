@@ -237,7 +237,12 @@ function expect(label, value, ...)
     if not matches then error("expected "..label.." to be of type "..table.join(types, "|")..", not "..typ, 3) end
 end
 ---returns `other` if `value` is nil, otherwise `value`
-function default(value, other) return value or other end
+function default(value, other)
+    if type(value) ~= "nil" then
+        return value
+    end
+    return other
+end
 ---throws an error if `value` is not between `min` and `max`
 ---@param label string
 ---@param value number
