@@ -515,6 +515,74 @@ return setmetatable({
         end
         return setmetatable(opts, { __name = "gui.button" })
     end,
+    menu = {
+        head = function(label, elements)
+            local _y = 1
+            for k, e in pairs(elements) do
+                expect("elements."..k, e, "gui.menu.selection", "gui.menu.seperator")
+                e.y = _y
+                _y = _y + 1
+            end
+            return setmetatable({
+                elements = elements,
+                x = 1, y = 1, label = label
+            }, { __name = "gui.menu.head" })
+        end,
+        selection = function(label, onClick)
+            return setmetatable({
+                label = label, onClick = onClick,
+                x = 1, y = 1,
+            }, { __name = "gui.menu.selection" })
+        end,
+        seperator = function()
+            return setmetatable({x = 1, y = 1 }, { __name = "gui.menu.seperator" })
+        end,
+    },
+    ---@param opts table
+    ---@return gui.menuTree
+    menuTree = function(opts)
+        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
+        opts.brackets = default(opts.brackets, "<>") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
+        opts.elements = default(opts.elements, {}) expect("elements", opts.elements, "table")
+        local _x = 1
+        for i, e in ipairs(opts.elements) do
+            expect("elements."..i, e, "gui.menu.head")
+            e.x = _x
+            _x = _x + #e.label + 2
+        end
+        expect("selected", opts.selected, "string", "nil")
+        opts.draw = default(opts.draw, function(self, win, parent)
+            expect("win", win, "table", "gui.page")
+            expect("parent", parent, "gui.page", "nil")
+            local fg, bg = win.getTextColor(), win.getBackgroundColor()
+            win.setCursorPos(1, 1)
+            for _, element in ipairs(self.elements) do
+                win.setBackgroundColor(self.bg)
+                win.setTextColor(self.bracketColor) win.write(self.brackets:sub(1,1))
+                win.setTextColor(self.fg)           win.write(element.label)
+                win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
+                -- todo draw element
+            end
+            win.setBackgroundColor(bg) win.setTextColor(fg)
+            if type(self.draw2) == "function" then return self:draw2(win, parent) end
+        end) expect("draw", opts.draw, "function")
+        opts.update = default(opts.update, function(self, win, parent)
+            expect("win", win, "table", "gui.page")
+            expect("parent", parent, "gui.page", "nil")
+            if type(self.update2) == "function" then return self:update2(win, parent) end
+        end) expect("update", opts.update, "function")
+        opts.init = default(opts.init, function(self, win, parent) self:update(win, parent) end) expect("init", opts.init, "function")
+        opts.event = default(opts.event, function(self, event, win, parent)
+            expect("event", event, "event")
+            expect("win", win, "table", "gui.page")
+            expect("parent", parent, "gui.page", "nil")
+            -- todo event
+            if type(self.event2) == "function" then return self:event2(event, win, parent) end
+        end) expect("event", opts.event, "function")
+        return setmetatable(opts, { __name = "gui.menuTree" })
+    end,
     run = function(page)
         local dos = require "dos"
         page:init(term)
