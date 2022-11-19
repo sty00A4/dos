@@ -442,6 +442,7 @@ return setmetatable({
     end,
     run = function(page)
         local dos = require "dos"
+        page:update(term)
         while not page.__CLOSE do
             term.reset()
             page:draw(term)

@@ -24,6 +24,9 @@ return function()
         dos.gui.slider {
             x = 4, y = 7, length = 10,
             bg = dos.theme.bg2,
+            update2 = function(self, win, page)
+                self.visible, self.active = not page.elements[2].checked, not page.elements[2].checked
+            end
         },
     }}
     return dos.gui.run(page)
