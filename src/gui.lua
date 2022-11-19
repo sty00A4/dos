@@ -36,31 +36,37 @@ return setmetatable({
             expect("win", win, "table", "gui.page")
             self.win.setBackgroundColor(self.bg)
             self.win.setTextColor(self.fg)
+            local res = {}
             for k, e in pairs(self.elements) do
                 if type(e.draw) == "function" then
-                    e:draw(self.win, self)
+                    res[k] = e:draw(self.win, self)
                 end
             end
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
+            return res
         end) expect("draw", opts.draw, "function")
         opts.update = default(opts.update, function(self, win, parent)
             expect("win", win, "table", "gui.page")
+            local res = {}
             for k, e in pairs(self.elements) do
                 if type(e.update) == "function" then
-                    e:update(self.win, self)
+                    res[k] = e:update(self.win, self)
                 end
             end
             if type(self.update2) == "function" then return self:update2(win, parent) end
+            return res
         end) expect("update", opts.update, "function")
         opts.event = default(opts.event, function(self, event, win, parent)
             expect("event", event, "event")
             expect("win", win, "table", "gui.page")
+            local res = {}
             for k, e in pairs(self.elements) do
                 if type(e.event) == "function" then
-                    e:event(event, self.win, self)
+                    res[k] = e:event(event, self.win, self)
                 end
             end
             if type(self.event2) == "function" then return self:event2(win, parent) end
+            return res
         end) expect("event", opts.event, "function")
         expect("draw2", opts.draw2, "function", "nil")
         expect("update2", opts.update2, "function", "nil")
