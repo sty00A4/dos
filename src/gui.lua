@@ -64,6 +64,7 @@ return setmetatable({
             if type(self.update2) == "function" then return self:update2(win, parent) end
             return res
         end) expect("update", opts.update, "function")
+        opts.init = default(opts.init, function(self, win, parent) self:update(win, parent) end) expect("init", opts.init, "function")
         opts.event = default(opts.event, function(self, event, win, parent)
             expect("event", event, "event")
             expect("win", win, "table", "gui.page")
@@ -120,6 +121,7 @@ return setmetatable({
             expect("parent", parent, "gui.page", "nil")
             if type(self.update2) == "function" then return self:update2(win, parent) end
         end) expect("update", opts.update, "function")
+        opts.init = default(opts.init, function(self, win, parent) self:update(win, parent) end) expect("init", opts.init, "function")
         opts.event = default(opts.event, function(self, event, win, parent)
             expect("event", event, "event")
             expect("win", win, "table", "gui.page")
@@ -193,6 +195,7 @@ return setmetatable({
             expect("parent", parent, "gui.page", "nil")
             if type(self.update2) == "function" then return self:update2(win, parent) end
         end) expect("update", opts.update, "function")
+        opts.init = default(opts.init, function(self, win, parent) self:update(win, parent) end) expect("init", opts.init, "function")
         opts.event = default(opts.event, function(self, event, win, parent)
             expect("event", event, "event")
             expect("win", win, "table", "gui.page")
@@ -252,6 +255,7 @@ return setmetatable({
             end
             if type(self.update2) == "function" then return self:update2(win, parent) end
         end) expect("update", opts.update, "function")
+        opts.init = default(opts.init, function(self, win, parent) self:update(win, parent) end) expect("init", opts.init, "function")
         opts.event = default(opts.event, function(self, event, win, parent)
             expect("event", event, "event")
             expect("win", win, "table", "gui.page")
@@ -326,6 +330,7 @@ return setmetatable({
             expect("parent", parent, "gui.page", "nil")
             if type(self.update2) == "function" then return self:update2(win, parent) end
         end) expect("update", opts.update, "function")
+        opts.init = default(opts.init, function(self, win, parent) self:update(win, parent) end) expect("init", opts.init, "function")
         opts.event = default(opts.event, function(self, event, win, parent)
             expect("event", event, "event")
             expect("win", win, "table", "gui.page")
@@ -385,6 +390,7 @@ return setmetatable({
             end
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
         end) expect("draw", opts.draw, "function")
+        opts.init = default(opts.init, function(self, win, parent) self:update(win, parent) end) expect("init", opts.init, "function")
         opts.update = default(opts.update, function(self, win, parent)
             if self.active then
                 self.current = math.min(math.max(self.current, 0), self.length)
@@ -442,7 +448,7 @@ return setmetatable({
     end,
     run = function(page)
         local dos = require "dos"
-        page:update(term)
+        page:init(term)
         while not page.__CLOSE do
             term.reset()
             page:draw(term)
