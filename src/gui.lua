@@ -1,4 +1,9 @@
 require("dos.src.ext")
+local __ERRORS = 0
+local function error_count(count, message, level)
+    if __ERRORS > count then error(message, (level or 1) + 1) end
+    __ERRORS = __ERRORS + 1
+end
 return setmetatable({
     ---@param win table
     drawBox = function(win, color)
@@ -529,25 +534,49 @@ return setmetatable({
     end,
     menu = {
         head = function(label, elements)
-            local _y = 1
+            local _y = 2
+            local w = #label + 2
             for k, e in pairs(elements) do
                 expect("elements."..k, e, "gui.menu.selection", "gui.menu.seperator")
+                if e.w > w then w = e.w end
                 e.y = _y
+                e.x = 1
                 _y = _y + 1
+            end
+            for _, e in pairs(elements) do
+                e.w = w
             end
             return setmetatable({
                 elements = elements,
-                x = 1, y = 1, label = label
-            }, { __name = "gui.menu.head" })
+                x = 1, y = 1, w = w, label = label,
+                _mouseTouch = function(self, x, y)
+                    return (x >= self.x and x <= self.x + self.w + 1) and (y == self.y)
+                end
+            }, {
+                __name = "gui.menu.head",
+                __newindex = function (self, k, v)
+                    if k == "x" then
+                        self.x = v
+                        for _, e in pairs(self.elements) do
+                            e.x = v
+                        end
+                        return
+                    end
+                    rawset(self, k, v)
+                end
+            })
         end,
         selection = function(label, onClick)
             return setmetatable({
                 label = label, onClick = onClick,
-                x = 1, y = 1,
+                x = 1, w = #label, y = 1,
+                _mouseTouch = function(self, x, y)
+                    return (x >= self.x and x <= self.x + self.w - 1) and (y == self.y)
+                end
             }, { __name = "gui.menu.selection" })
         end,
         seperator = function()
-            return setmetatable({x = 1, y = 1 }, { __name = "gui.menu.seperator" })
+            return setmetatable({x = 1, y = 1, w = 1 }, { __name = "gui.menu.seperator" })
         end,
     },
     ---@param opts table
@@ -558,10 +587,14 @@ return setmetatable({
         opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
         opts.brackets = default(opts.brackets, "<>") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
         opts.elements = default(opts.elements, {}) expect("elements", opts.elements, "table")
+        expect("selected", opts.selected, "number", "nil")
         local _x = 1
         for i, e in ipairs(opts.elements) do
             expect("elements."..i, e, "gui.menu.head")
             e.x = _x
+            for _, sub in pairs(e.elements) do
+                sub.x = _x
+            end
             _x = _x + #e.label + 2
         end
         expect("selected", opts.selected, "string", "nil")
@@ -570,12 +603,27 @@ return setmetatable({
             expect("parent", parent, "gui.page", "nil")
             local fg, bg = win.getTextColor(), win.getBackgroundColor()
             win.setCursorPos(1, 1)
-            for _, element in ipairs(self.elements) do
+            for i, element in ipairs(self.elements) do
+                local x, y = win.getCursorPos()
                 win.setBackgroundColor(self.bg)
                 win.setTextColor(self.bracketColor) win.write(self.brackets:sub(1,1))
                 win.setTextColor(self.fg)           win.write(element.label)
                 win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
-                -- todo draw element
+                win.setCursorPos(x + #element.label + 2, y)
+            end
+            if self.selected then
+                local head = self.elements[self.selected]
+                win.setTextColor(self.fg)
+                for j, sub in ipairs(head.elements) do
+                    win.setCursorPos(head.x, 1 + j)
+                    if metatype(sub) == "gui.menu.selection" then
+                        win.write((" "):rep(head.w))
+                        win.setCursorPos(head.x, 1 + j)
+                        win.write(sub.label)
+                    else
+                        win.write(("-"):rep(head.w))
+                    end
+                end
             end
             win.setBackgroundColor(bg) win.setTextColor(fg)
             if type(self.draw2) == "function" then return self:draw2(win, parent) end
@@ -590,7 +638,29 @@ return setmetatable({
             expect("event", event, "event")
             expect("win", win, "table", "gui.page")
             expect("parent", parent, "gui.page", "nil")
-            -- todo event
+            if event.type == "mouse_click" and event.button == 1 then
+                local wx, wy = 1, 1
+                if win.getPosition then
+                    wx, wy = win.getPosition()
+                end
+                if type(self.selected) == "number" then
+                    for y, sub in ipairs(self.elements[self.selected].elements) do
+                        if metatype(sub) == "gui.menu.selection" then
+                            if sub:_mouseTouch(event.x - wx + 1, event.y - wy + 1) then
+                                self.selected = nil
+                                return sub:onClick(win, parent)
+                            end
+                        end
+                    end
+                end
+                for i, head in ipairs(self.elements) do
+                    if head:_mouseTouch(event.x - wx + 1, event.y - wy + 1) then
+                        self.selected = i
+                        return
+                    end
+                end
+                self.selected = nil
+            end
             if type(self.event2) == "function" then return self:event2(event, win, parent) end
         end) expect("event", opts.event, "function")
         return setmetatable(opts, { __name = "gui.menuTree" })
@@ -599,8 +669,8 @@ return setmetatable({
         local dos = require "dos"
         page:init(term)
         while not page.__CLOSE do
+            page.win.clear()
             page:update(term)
-            term.reset()
             page:draw(term)
             local event = dos.event.new(os.pullEventRaw())
             page:event(event, term)
