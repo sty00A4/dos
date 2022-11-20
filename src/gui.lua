@@ -535,7 +535,7 @@ return setmetatable({
     menu = {
         head = function(label, elements)
             local _y = 2
-            local w = #label + 2
+            local w = #label
             for k, e in pairs(elements) do
                 expect("elements."..k, e, "gui.menu.selection", "gui.menu.seperator")
                 if e.w > w then w = e.w end
@@ -548,22 +548,12 @@ return setmetatable({
             end
             return setmetatable({
                 elements = elements,
-                x = 1, y = 1, w = w, label = label,
+                x = 1, y = 1, w = #label, label = label,
                 _mouseTouch = function(self, x, y)
                     return (x >= self.x and x <= self.x + self.w + 1) and (y == self.y)
                 end
             }, {
-                __name = "gui.menu.head",
-                __newindex = function (self, k, v)
-                    if k == "x" then
-                        self.x = v
-                        for _, e in pairs(self.elements) do
-                            e.x = v
-                        end
-                        return
-                    end
-                    rawset(self, k, v)
-                end
+                __name = "gui.menu.head"
             })
         end,
         selection = function(label, onClick)
@@ -651,6 +641,10 @@ return setmetatable({
                                 return sub:onClick(win, parent)
                             end
                         end
+                    end
+                    if self.elements[self.selected]:_mouseTouch(event.x - wx + 1, event.y - wy + 1) then
+                        self.selected = nil
+                        return
                     end
                 end
                 for i, head in ipairs(self.elements) do

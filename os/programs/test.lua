@@ -34,8 +34,8 @@ return function()
             elements = {
                 dos.gui.menu.head("file", {
                     dos.gui.menu.selection("new", function(self, win, page) error(self.label) end),
-                    dos.gui.menu.seperator(),
                     dos.gui.menu.selection("open", function(self, win, page) error(self.label) end),
+                    dos.gui.menu.seperator(),
                     dos.gui.menu.selection("save", function(self, win, page) error(self.label) end),
                 }),
                 dos.gui.menu.head("edit", {
@@ -52,10 +52,6 @@ return function()
                 }),
             }
         },
-        dos.gui.text {
-            x = 1, y = H-4, content = "nil", w = W, h = 4, center = true,
-            update2 = function(self, win, page) self.content = table.tostring(page.elements[2].elements) end
-        }
     }}
     return dos.gui.run(page)
 end
