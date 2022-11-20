@@ -535,7 +535,7 @@ return setmetatable({
     menu = {
         head = function(label, elements)
             local _y = 2
-            local w = #label
+            local w = #label + 2
             for k, e in pairs(elements) do
                 expect("elements."..k, e, "gui.menu.selection", "gui.menu.seperator")
                 if e.w > w then w = e.w end
@@ -543,9 +543,7 @@ return setmetatable({
                 e.x = 1
                 _y = _y + 1
             end
-            for _, e in pairs(elements) do
-                e.w = w
-            end
+            for _, e in pairs(elements) do e.w = w end
             return setmetatable({
                 elements = elements,
                 x = 1, y = 1, w = #label, label = label,
@@ -607,11 +605,11 @@ return setmetatable({
                 for j, sub in ipairs(head.elements) do
                     win.setCursorPos(head.x, 1 + j)
                     if metatype(sub) == "gui.menu.selection" then
-                        win.write((" "):rep(head.w))
+                        win.write((" "):rep(sub.w))
                         win.setCursorPos(head.x, 1 + j)
                         win.write(sub.label)
                     else
-                        win.write(("-"):rep(head.w))
+                        win.write(("-"):rep(sub.w))
                     end
                 end
             end
