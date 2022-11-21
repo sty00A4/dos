@@ -1,5 +1,4 @@
-term.clear()
-term.setCursorPos(1, 1)
+term.reset()
 local dos = require("dos")
 dos.programs.login()
 dos.programs.desktop()
