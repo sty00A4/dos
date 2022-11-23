@@ -14,12 +14,14 @@ return function()
                     term.reset()
                     if #password == 0 then break end
                     if password ~= user.password then
+                        dos.log.info("wrong password: expected '"..user.password.."' got '"..password.."'")
                         dos.prompt.info("wrong password")
                         term.reset()
                     end
                 until password == user.password
                 term.reset()
                 if password == user.password then
+                    dos.log.info("right password: '"..password.."'")
                     dos.users.startUser(name)
                     return true
                 end

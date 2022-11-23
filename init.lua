@@ -2,6 +2,7 @@ require("dos.src.ext")
 local lib = {}
 lib.gui = require("dos.src.gui")
 lib.event = require("dos.src.event")
+lib.log = require("dos.src.log")
 lib.prompt = require("dos.os.prompt")
 lib.permit = require("dos.os.permit")
 lib.users = require("dos.os.users")
