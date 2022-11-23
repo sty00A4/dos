@@ -1,6 +1,6 @@
 require("dos.src.ext")
 local status, theme = pcall(require, "dos.os.theme")
-if not status then them = {
+if not status then theme = {
     bg = colors.black,
     bg2 = colors.gray,
     mark = colors.lightGray,
