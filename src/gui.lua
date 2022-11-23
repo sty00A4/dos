@@ -555,18 +555,21 @@ return setmetatable({
             for _, e in pairs(elements) do e.w = w end
             return setmetatable({
                 elements = elements,
-                x = 1, y = 1, w = #label, label = label,
+                x = 1, y = 1, w = #label + 2, label = label,
                 _mouseTouch = function(self, x, y)
-                    return (x >= self.x and x <= self.x + self.w + 1) and (y == self.y)
+                    return (x >= self.x and x <= self.x + self.w - 1) and (y == self.y)
                 end
             }, {
                 __name = "gui.menu.head"
             })
         end,
-        selection = function(label, onClick)
+        selection = function(label, onClick, brackets, bracketColor)
+            bracketColor = default(bracketColor, colors.gray) expect("bracketColor", bracketColor, "number")
+            brackets = default(brackets, "[]") expect("brackets", brackets, "string") expect_min("brackets length", #brackets, 2)
             return setmetatable({
                 label = label, onClick = onClick,
-                x = 1, w = #label, y = 1,
+                brackets = brackets, bracketColor = bracketColor,
+                x = 1, w = #label + 2, y = 1,
                 _mouseTouch = function(self, x, y)
                     return (x >= self.x and x <= self.x + self.w - 1) and (y == self.y)
                 end
@@ -581,7 +584,7 @@ return setmetatable({
     menuTree = function(opts)
         opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
         opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
-        opts.bg2 = default(opts.bg2, theme.bg2) expect("bg2", opts.bg2, "number")
+        opts.bg2 = default(opts.bg2, theme.bg) expect("bg2", opts.bg2, "number")
         opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
         opts.brackets = default(opts.brackets, "<>") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
         opts.elements = default(opts.elements, {}) expect("elements", opts.elements, "table")
@@ -616,9 +619,11 @@ return setmetatable({
                 for j, sub in ipairs(head.elements) do
                     win.setCursorPos(head.x, 1 + j)
                     if metatype(sub) == "gui.menu.selection" then
-                        win.write((" "):rep(sub.w))
-                        win.setCursorPos(head.x, 1 + j)
-                        win.write(sub.label)
+                        win.setTextColor(self.bracketColor) win.write(self.brackets:sub(1,1))
+                        win.write((" "):rep(sub.w - 2))
+                        win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
+                        win.setCursorPos(head.x + sub.w/2 - #sub.label/2, 1 + j)
+                        win.setTextColor(self.fg)           win.write(sub.label)
                     else
                         win.write(("-"):rep(sub.w))
                     end
