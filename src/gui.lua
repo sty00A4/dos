@@ -619,9 +619,9 @@ return setmetatable({
                 for j, sub in ipairs(head.elements) do
                     win.setCursorPos(head.x, 1 + j)
                     if metatype(sub) == "gui.menu.selection" then
-                        win.setTextColor(self.bracketColor) win.write(self.brackets:sub(1,1))
+                        win.setTextColor(sub.bracketColor) win.write(sub.brackets:sub(1,1))
                         win.write((" "):rep(sub.w - 2))
-                        win.setTextColor(self.bracketColor) win.write(self.brackets:sub(2,2))
+                        win.setTextColor(sub.bracketColor) win.write(sub.brackets:sub(2,2))
                         win.setCursorPos(head.x + sub.w/2 - #sub.label/2, 1 + j)
                         win.setTextColor(self.fg)           win.write(sub.label)
                     else

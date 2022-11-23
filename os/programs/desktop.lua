@@ -7,7 +7,7 @@ return function()
                 dos.gui.menu.selection("shutdown", function() os.shutdown() end),
                 dos.gui.menu.selection("reboot", function() os.reboot() end),
             })
-        }, brackets = "[]" }
+        } }
     } }
     return dos.gui.run(page)
 end
