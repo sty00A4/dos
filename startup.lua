@@ -1,5 +1,5 @@
-term.reset()
 local dos = require("dos")
+term.reset()
 dos.programs.login()
 dos.programs.desktop()
 os.shutdown()

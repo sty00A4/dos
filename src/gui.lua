@@ -1,4 +1,13 @@
 require("dos.src.ext")
+local status, theme = pcall(require, "dos.os.theme")
+if not status then them = {
+    bg = colors.black,
+    bg2 = colors.gray,
+    mark = colors.lightGray,
+    fg = colors.white,
+    ok = colors.green,
+    fail = colors.red,
+} end
 local __ERRORS = 0
 local function error_count(count, message, level)
     if __ERRORS > count then error(message, (level or 1) + 1) end
@@ -37,8 +46,8 @@ return setmetatable({
         opts.elements = default(opts.elements, {}) expect("elements", opts.elements, "table")
         opts.parent = default(opts.parent, term.current()) expect("parent", opts.parent, "table", "gui.page")
         for k, e in pairs(opts.elements) do expect(k, e, "gui") end
-        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
-        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
         opts.draw = default(opts.draw, function(self, win, parent)
             expect("win", win, "table", "gui.page")
             expect("parent", parent, "gui.page", "nil")
@@ -113,8 +122,8 @@ return setmetatable({
         opts.x = math.floor(opts.x)
         opts.y = math.floor(opts.y)
         opts.text = default(opts.text, "button") expect("text", opts.text, "string")
-        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
-        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
         opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
         opts.brackets = default(opts.brackets, "[]") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
         opts.draw = default(opts.draw, function(self, win, parent)
@@ -180,8 +189,8 @@ return setmetatable({
         opts.content = default(opts.content, "empty text") expect("content", opts.content, "string")
         opts.w = default(opts.w, #opts.content) expect("w", opts.w, "number")
         opts.h = default(opts.h, 1) expect("h", opts.h, "number")
-        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
-        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
         opts.draw = default(opts.draw, function(self, win, parent)
             expect("win", win, "table", "gui.page")
             expect("parent", parent, "gui.page", "nil")
@@ -238,8 +247,8 @@ return setmetatable({
         opts.content = default(opts.content, opts.default) expect("content", opts.content, "string")
         opts.selected = default(opts.selected, false) expect("selected", opts.selected, "boolean")
         opts.w = default(opts.w, 12) expect("w", opts.w, "number")
-        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
-        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
         opts.draw = default(opts.draw, function(self, win, parent)
             expect("win", win, "table", "gui.page")
             expect("parent", parent, "gui.page", "nil")
@@ -320,8 +329,8 @@ return setmetatable({
         opts.y = default(opts.y, 1) expect("y", opts.y, "number")
         opts.x = math.floor(opts.x)
         opts.y = math.floor(opts.y)
-        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
-        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
         opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
         opts.brackets = default(opts.brackets, "()") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
         opts.symbol = default(opts.symbol, "O") expect("symbol", opts.symbol, "string")
@@ -382,8 +391,8 @@ return setmetatable({
         opts.y = default(opts.y, 1) expect("y", opts.y, "number")
         opts.x = math.floor(opts.x)
         opts.y = math.floor(opts.y)
-        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
-        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
         opts.length = default(opts.length, 2) expect("length", opts.length, "number") expect_min("length", opts.length, 2)
         opts.length = math.floor(opts.length)
         opts.current = default(opts.current, 0) expect("current", opts.current, "number") expect_min("current", opts.current, 0)
@@ -472,8 +481,8 @@ return setmetatable({
         for k, e in ipairs(opts.buttons) do expect("buttons."..k, e, "string") end
         opts._offsets = {}
         local _x = 0 for k, e in ipairs(opts.buttons) do opts._offsets[k] = _x  _x = _x + #e + 2 end
-        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
-        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
         opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
         opts.brackets = default(opts.brackets, "[]") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
         opts.draw = default(opts.draw, function(self, win, parent)
@@ -570,8 +579,9 @@ return setmetatable({
     ---@param opts table
     ---@return gui.menuTree
     menuTree = function(opts)
-        opts.fg = default(opts.fg, term.getTextColor()) expect("fg", opts.fg, "number")
-        opts.bg = default(opts.bg, term.getBackgroundColor()) expect("bg", opts.bg, "number")
+        opts.fg = default(opts.fg, theme.fg) expect("fg", opts.fg, "number")
+        opts.bg = default(opts.bg, theme.bg) expect("bg", opts.bg, "number")
+        opts.bg2 = default(opts.bg2, theme.bg2) expect("bg2", opts.bg2, "number")
         opts.bracketColor = default(opts.bracketColor, colors.gray) expect("bracketColor", opts.bracketColor, "number")
         opts.brackets = default(opts.brackets, "<>") expect("brackets", opts.brackets, "string") expect_min("brackets length", #opts.brackets, 2)
         opts.elements = default(opts.elements, {}) expect("elements", opts.elements, "table")
@@ -600,6 +610,7 @@ return setmetatable({
                 win.setCursorPos(x + #element.label + 2, y)
             end
             if self.selected then
+                win.setBackgroundColor(self.bg2)
                 local head = self.elements[self.selected]
                 win.setTextColor(self.fg)
                 for j, sub in ipairs(head.elements) do
@@ -665,6 +676,7 @@ return setmetatable({
             page:update(term)
             page:draw(term)
             local event = dos.event.new(os.pullEventRaw())
+            term.setCursorPos(1, 1)
             page:event(event, term)
         end
     end
